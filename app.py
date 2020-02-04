@@ -4,6 +4,7 @@
 from __future__ import unicode_literals
 
 import datetime
+import os
 
 from flask import (Flask, render_template, redirect, url_for, request, flash)
 from flask_bootstrap import Bootstrap
@@ -65,7 +66,7 @@ def show_environments_list():
             db.session.add(envlist)
             # commit()提交事务
             db.session.commit()
-            flash('新环境添加成功')
+            flash("新环境添加成功")
         else:
             flash(form.errors)
         return redirect(url_for('show_environments_list'))
@@ -89,7 +90,6 @@ def show_version_list(env_id):
         # filter_by() 把等值过滤器添加到原查询上，返回一个新查询
         versionlists = Version.query.filter_by(env_id=env_id).join(Environments, Version.env_id == Environments.id)
         env_out_name = Environments.query.filter_by(id=env_id).first_or_404()
-        print(env_out_name.name)
         return render_template('view.html', env_out_name=env_out_name.name, versionlists=versionlists, form=form)
     else:
         if form.validate_on_submit():
@@ -145,10 +145,17 @@ def delete_version_list(env_id, id):
 def deploy(env_id, id):
     versionlists = Version.query.filter_by(env_id=env_id, id=id).join(Environments,
                                                                       Version.env_id == Environments.id).first_or_404()
+    env_out_name = (Environments.query.filter_by(id=env_id).first_or_404()).name
+    env_name=str(env_out_name).lower()
+
     print(versionlists.env_version)
-    print(env_id)
-    print(id)
-    
+    #print(type(env_name)) # str
+    print(env_name)
+    command="docker run -itd {}:{} /bin/bash".format(env_name,versionlists.env_version)
+    print(command)
+    os.system(command)
+
+
     flash('部署成功')
     return redirect(url_for('show_version_list', _external=True, env_id=env_id))
 
@@ -159,4 +166,5 @@ def page_not_found(e):
 
 
 if __name__ == '__main__':
-    app.run(host='127.0.0.1', port=5001, debug=True)
+    #app.run(host='127.0.0.1', port=5001, debug=True)
+    app.run(host='0.0.0.0', port=5001, debug=True)
