@@ -41,13 +41,15 @@ class Version(db.Model):
     # env_id 来自环境的外键，用于搜索
     env_id = db.Column(db.Integer, db.ForeignKey('environments.id'), nullable=False)
     env_version = db.Column(db.String(1024), nullable=False)
+    docker_name = db.Column(db.String(1024), nullable=False)
     value = db.Column(db.String(1024), nullable=False)
     # nullable，如果设为 True ,这列允许使用空值;如果设为True ,这列允许使用空值
     create_time = db.Column(db.Date, default=datetime.date.today(), nullable=True)
 
-    def __init__(self, env_id, env_version, value):
+    def __init__(self, env_id, env_version,docker_name, value):
         self.env_id = env_id
         self.env_version = env_version
+        self.docker_name=docker_name
         self.value = value
 
 
@@ -93,7 +95,7 @@ def show_version_list(env_id):
         return render_template('view.html', env_out_name=env_out_name.name, versionlists=versionlists, form=form)
     else:
         if form.validate_on_submit():
-            versionlist = Version(env_id, form.env_version.data, form.value.data)
+            versionlist = Version(env_id, form.env_version.data, form.docker_name.data,form.value.data)
             # add()插入数据
             db.session.add(versionlist)
             # commit()提交事务
@@ -111,6 +113,7 @@ def change_version_list(env_id, id):
                                                                           Version.env_id == Environments.id).first_or_404()
         form = VersionListForm()
         form.env_version.data = versionlists.env_version
+        form.docker_name.data=versionlists.docker_name
         form.value.data = versionlists.value
         return render_template('modify.html', form=form)
     else:
@@ -120,6 +123,7 @@ def change_version_list(env_id, id):
                                                                               Version.env_id == Environments.id).first_or_404()
 
             versionlists.env_version = form.env_version.data
+            versionlists.docker_name=form.docker_name.data
             versionlists.value = form.value.data
             db.session.add(versionlists)
             db.session.commit()
@@ -147,11 +151,13 @@ def deploy(env_id, id):
                                                                       Version.env_id == Environments.id).first_or_404()
     env_out_name = (Environments.query.filter_by(id=env_id).first_or_404()).name
     env_name=str(env_out_name).lower()
+    #print(env_name) #ubuntu
+    #print(versionlists.env_version) #14.04
+    #print(versionlists.docker_name) # hw
+    docker_env_name=env_name+'_'+versionlists.env_version+'_'+versionlists.docker_name # ubuntu_14.04_hw
+    
 
-    print(versionlists.env_version)
-    #print(type(env_name)) # str
-    print(env_name)
-    command="docker run -itd {}:{} /bin/bash".format(env_name,versionlists.env_version)
+    command="docker run --name {} -itd {}:{} /bin/bash".format(docker_env_name,env_name,versionlists.env_version)
     print(command)
     os.system(command)
 
