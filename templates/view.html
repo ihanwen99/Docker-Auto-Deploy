@@ -9,6 +9,7 @@
         <th class="active">ID</th>
         <th class="active">环境版本</th>
         <th class="active">Docker名</th>
+        <th class="active">额外配置</th>
         <th class="active">备注</th>
         <th class="active">创建时间</th>
         <th class='active'>操作</th>
@@ -20,6 +21,7 @@
                 <td>{{ loop.index }}</td>
                 <td>{{ todo.env_version }}</td>
                 <td>{{ todo.docker_name }}</td>
+                <td>{{ todo.extra_code }}</td>
                 <td>{{ todo.value }}</td>
                 <td>{{ todo.create_time }}</td>
                 <td>
