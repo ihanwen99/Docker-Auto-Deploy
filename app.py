@@ -142,6 +142,23 @@ def delete_version_list(env_id, id):
     # first_or_404() 返回查询的第一个结果，如果没有结果，则终止请求，返回 404 错误响应
     versionlists = Version.query.filter_by(env_id=env_id, id=id).join(Environments,
                                                                       Version.env_id == Environments.id).first_or_404()
+    env_out_name = (Environments.query.filter_by(id=env_id).first_or_404()).name
+    env_name=str(env_out_name).lower()
+    print(env_name) #ubuntu
+    print(env_name.split('/')[-1])
+    #print(versionlists.env_version) #14.04
+    #print(versionlists.docker_name) # hw
+
+    docker_env_name=env_name.split('/')[-1]+'_'+versionlists.env_version+'_'+versionlists.docker_name # ubuntu_14.04_hw
+
+    command1="docker stop {}".format(docker_env_name)
+    command2="docker rm {}".format(docker_env_name)
+
+    print(command1)
+    print(command2)
+    os.system(command1)
+    os.system(command2)
+
     # delete()删除数据
     db.session.delete(versionlists)
     db.session.commit()
