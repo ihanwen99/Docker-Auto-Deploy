@@ -5,6 +5,7 @@ from __future__ import unicode_literals
 
 import datetime
 import os
+import re
 
 from flask import (Flask, render_template, redirect, url_for, request, flash)
 from flask_bootstrap import Bootstrap
@@ -91,41 +92,41 @@ def show_docker_ps_a():
         #     print(line)
         #     print(type(line))
         docker_count=0
-        docker_container_list=[]
+        docker_container_list=[]    
         for line in result:
-            line=line.strip().split()
+            line_split_ago=line.strip().split('ago')
             if docker_count==0:
                 docker_count+=1
                 continue
             docker_container_single={}
-            docker_container_single['CONTAINER_ID']=line[0]
-            docker_container_single['IMAGE']=line[1]
-            docker_container_single['COMMAND']=line[2]
-            docker_container_single['CREATED']=line[3]+' '+line[4]+' '+line[5]
-            docker_container_single['STATUS']=line[6]+' '+line[7]+' '+line[8]
-            docker_container_single['PORTS']=' '.join(line[9:-1])
-            docker_container_single['NAMES']=line[-1]
 
-            # print(docker_container_single['CREATED'])
+            line1=line_split_ago[0].split()
+            docker_container_single['CONTAINER_ID']=line1[0]
+            docker_container_single['IMAGE']=line1[1]
+            docker_container_single['COMMAND']=line1[2]
+            docker_container_single['CREATED']=' '.join(line1[3:])+' ago'
+            #print(docker_container_single['CREATED'])
+
+            line2=line_split_ago[1]
+            spanList=['second','seconds','minute','minutes','hour','hours']
+            for word in spanList:
+                searchResult=re.search(word, line2)
+                if searchResult:
+                    start,end=searchResult.span()
+            docker_container_single['STATUS']=line2[:end]
+
+            line3=line2[end:].split()
+
+            docker_container_single['PORTS']=' '.join(line3[:-1]) if line3[:-1]!=[] else ' '
+            docker_container_single['NAMES']=line3[-1]
+
+            
             # print(docker_container_single['STATUS'])
             # print(docker_container_single['PORTS'])
             # print(docker_container_single['NAMES'])
             docker_container_list.append(docker_container_single)
 
         return render_template('docker.html',containerList=docker_container_list)
-    else:
-    	# POST 的情况主要是 对容器进行一个处理
-    	# 涉及的操作是删除 和 [备用添加：进入docekr]
-        if form.validate_on_submit():
-            envlist = Environments(form.name.data, form.description.data)
-            # add()插入数据
-            db.session.add(envlist)
-            # commit()提交事务
-            db.session.commit()
-            flash("新环境添加成功")
-        else:
-            flash(form.errors)
-        return redirect(url_for('show_environments_list'))
 
 
 @app.route('/delete/<int:id>')
@@ -245,7 +246,7 @@ def deploy(env_id, id):
 
 
     flash('Deploy Successfully')
-    return redirect(url_for('show_version_list', _external=True, env_id=env_id))
+    return redirect(url_for('show_docker_ps_a', _external=True, env_id=env_id))
 
 
 
