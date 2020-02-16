@@ -263,7 +263,7 @@ def deploy(env_id, id):
 
 
     flash('Deploy Successfully')
-    return redirect(url_for('show_docker_ps_a', _external=True, env_id=env_id))
+    return redirect(url_for('show_docker_ps_a'))
 
 
 
