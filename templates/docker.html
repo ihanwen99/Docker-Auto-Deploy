@@ -29,7 +29,7 @@
                 <td>{{ todo['COMMAND'] }}</td>
                 <td>
                     <a href="123" class="btn btn-success" role ="button">Enter Docker</a>
-                    <a href="123" class="btn btn-danger" role ="button">Stop & Remove</a>
+                    <a href="{{ url_for('delete_docker_container', docker_string_name=todo['NAMES']) }}" class="btn btn-danger" role ="button">Stop & Remove</a>
 
                 </td>
             </tr>

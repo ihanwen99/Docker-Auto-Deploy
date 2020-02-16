@@ -225,6 +225,22 @@ def delete_version_list(env_id, id):
     flash('Delete Version Successfully')
     return redirect(url_for('show_version_list', _external=True, env_id=env_id))
 
+@app.route('/delete/<string:docker_string_name>')
+def delete_docker_container(docker_string_name):
+    
+    command1="docker stop {}".format(docker_string_name)
+    command2="docker rm {}".format(docker_string_name)
+
+    print(command1)
+    os.system(command1)
+    
+    print(command2)
+    os.system(command2)
+
+    flash('Delete Version Successfully')
+    return redirect(url_for('show_docker_ps_a'))
+
+
 
 @app.route('/deploy/<int:env_id>/<int:id>')
 def deploy(env_id, id):
