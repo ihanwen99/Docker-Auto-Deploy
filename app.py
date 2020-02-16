@@ -108,11 +108,12 @@ def show_docker_ps_a():
             #print(docker_container_single['CREATED'])
 
             line2=line_split_ago[1]
-            spanList=['second','seconds','minute','minutes','hour','hours']
+            spanList=['second','seconds','minute','minutes','hour','hours','day','days','month','months','year','years']
             for word in spanList:
                 searchResult=re.search(word, line2)
                 if searchResult:
                     start,end=searchResult.span()
+                    break
             docker_container_single['STATUS']=line2[:end]
 
             line3=line2[end:].split()
