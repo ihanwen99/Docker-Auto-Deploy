@@ -1,0 +1,43 @@
+{% extends "base_env.html" %}
+
+
+{% block page_content %}
+
+<table class="table table-hover">
+    <thead>
+        <th class='active'>NAMES</th>
+        <th class="active">CONTAINER_ID</th>
+        <th class="active">IMAGE</th>
+        
+        <th class="active">CREATED</th>
+        <th class='active'>STATUS</th>
+        <th class='active'>PORTS</th>
+        <th class="active">COMMAND</th>
+        <th class='active'>OPERATION</th>
+    </thead>
+    <tbody>
+        {% for todo in containerList %}
+            <!-- tr -->
+            <tr class="info">
+                <td>{{ todo['NAMES'] }}</td>
+                <td>{{ todo['CONTAINER_ID'] }}</td>
+                <td>{{ todo['IMAGE']}}</td>
+                
+                <td>{{ todo['CREATED'] }}</td>
+                <td>{{ todo['STATUS'] }}</td>
+                <td>{{ todo['PORTS'] }}</td>
+                <td>{{ todo['COMMAND'] }}</td>
+                <td>
+                    <a href="123" class="btn btn-success" role ="button">Enter Docker</a>
+                    <a href="123" class="btn btn-danger" role ="button">Stop & Remove</a>
+
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+
+
+
+{% endblock %}

@@ -55,6 +55,7 @@ class Version(db.Model):
         self.value = value
 
 
+
 @app.route('/', methods=['GET', 'POST'])
 def show_environments_list():
     form = EnvironmentsListForm()
@@ -64,6 +65,57 @@ def show_environments_list():
         envlists = Environments.query.all()
         return render_template('index.html', envlists=envlists, form=form)
     else:
+        if form.validate_on_submit():
+            envlist = Environments(form.name.data, form.description.data)
+            # add()插入数据
+            db.session.add(envlist)
+            # commit()提交事务
+            db.session.commit()
+            flash("Add Env Successfully.")
+        else:
+            flash(form.errors)
+        return redirect(url_for('show_environments_list'))
+
+@app.route('/docker', methods=['GET', 'POST'])
+def show_docker_ps_a():
+    if request.method == 'GET':
+        # docker_ps获取全部container
+        # 传入信息，渲染docekr.html
+        docker_command="docker ps -a"
+        print(docker_command)
+        #print(os.popen(docker_command)) #<open file 'docker ps -a', mode 'r' at 0x7f456d2e6150> 
+        #print(type(os.popen(docker_command))) #<type 'file'> 
+        result=os.popen(docker_command)
+        # res=result.read()
+        # for line in res.splitlines():
+        #     print(line)
+        #     print(type(line))
+        docker_count=0
+        docker_container_list=[]
+        for line in result:
+            line=line.strip().split()
+            if docker_count==0:
+                docker_count+=1
+                continue
+            docker_container_single={}
+            docker_container_single['CONTAINER_ID']=line[0]
+            docker_container_single['IMAGE']=line[1]
+            docker_container_single['COMMAND']=line[2]
+            docker_container_single['CREATED']=line[3]+' '+line[4]+' '+line[5]
+            docker_container_single['STATUS']=line[6]+' '+line[7]+' '+line[8]
+            docker_container_single['PORTS']=' '.join(line[9:-1])
+            docker_container_single['NAMES']=line[-1]
+
+            # print(docker_container_single['CREATED'])
+            # print(docker_container_single['STATUS'])
+            # print(docker_container_single['PORTS'])
+            # print(docker_container_single['NAMES'])
+            docker_container_list.append(docker_container_single)
+
+        return render_template('docker.html',containerList=docker_container_list)
+    else:
+    	# POST 的情况主要是 对容器进行一个处理
+    	# 涉及的操作是删除 和 [备用添加：进入docekr]
         if form.validate_on_submit():
             envlist = Environments(form.name.data, form.description.data)
             # add()插入数据
@@ -90,7 +142,7 @@ def delete_environments_list(id):
     db.session.delete(envlist)
 
     db.session.commit()
-    flash('删除环境成功')
+    flash('Delete Env Successfully.')
     return redirect(url_for('show_environments_list'))
 
 
@@ -109,7 +161,7 @@ def show_version_list(env_id):
             db.session.add(versionlist)
             # commit()提交事务
             db.session.commit()
-            flash('新的版本信息添加成功')
+            flash('Add New Version Successfully')
         else:
             flash(form.errors)
         return redirect(url_for('show_version_list', _external=True, env_id=env_id))
@@ -138,7 +190,7 @@ def change_version_list(env_id, id):
             versionlists.value = form.value.data
             db.session.add(versionlists)
             db.session.commit()
-            flash('修改成功')
+            flash('Modify Successfully')
         else:
             flash(form.errors)
         return redirect(url_for('show_version_list', _external=True, env_id=env_id))
@@ -169,7 +221,7 @@ def delete_version_list(env_id, id):
     # delete()删除数据
     db.session.delete(versionlists)
     db.session.commit()
-    flash('删除成功')
+    flash('Delete Version Successfully')
     return redirect(url_for('show_version_list', _external=True, env_id=env_id))
 
 
@@ -192,8 +244,11 @@ def deploy(env_id, id):
     os.system(command)
 
 
-    flash('部署成功')
+    flash('Deploy Successfully')
     return redirect(url_for('show_version_list', _external=True, env_id=env_id))
+
+
+
 
 
 @app.errorhandler(404)

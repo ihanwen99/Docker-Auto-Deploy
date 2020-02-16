@@ -11,14 +11,14 @@ from wtforms.validators import DataRequired, Length
 
 
 class VersionListForm(FlaskForm):
-    env_version = StringField('环境版本', validators=[DataRequired(), Length(1, 64)])
-    docker_name=StringField('Docker名', validators=[DataRequired(), Length(1, 64)])
-    extra_code=StringField('额外配置', validators=[Length(0, 64)])
-    value = StringField('环境备注', validators=[Length(0, 64)])
-    submit = SubmitField('提交')
+    env_version = StringField('Image Name', validators=[DataRequired(), Length(1, 64)])
+    docker_name=StringField('Docker Name', validators=[DataRequired(), Length(1, 64)])
+    extra_code=StringField('Extra Config', validators=[Length(0, 64)])
+    value = StringField('Description', validators=[Length(0, 64)])
+    submit = SubmitField('Submit')
 
 
 class EnvironmentsListForm(FlaskForm):
-    name = StringField('环境', validators=[DataRequired(), Length(1, 64)])
-    description = StringField('描述', validators=[DataRequired(), Length(1, 64)])
-    submit = SubmitField('提交')
+    name = StringField('Image Name', validators=[DataRequired(), Length(1, 64)])
+    description = StringField('Description', validators=[DataRequired(), Length(1, 64)])
+    submit = SubmitField('Submit')
