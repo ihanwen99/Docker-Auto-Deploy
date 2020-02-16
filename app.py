@@ -94,7 +94,7 @@ def show_docker_ps_a():
         docker_count=0
         docker_container_list=[]    
         for line in result:
-            line_split_ago=line.strip().split('ago')
+            line_split_ago=line.decode('utf-8').strip().split('ago')
             if docker_count==0:
                 docker_count+=1
                 continue
@@ -108,7 +108,7 @@ def show_docker_ps_a():
             #print(docker_container_single['CREATED'])
 
             line2=line_split_ago[1]
-            spanList=['second','seconds','minute','minutes','hour','hours','day','days','month','months','year','years']
+            spanList=['seconds','second','minutes','minute','hours','hour','days','day','months','month','years','year']
             for word in spanList:
                 searchResult=re.search(word, line2)
                 if searchResult:
