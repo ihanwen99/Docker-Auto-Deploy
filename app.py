@@ -108,12 +108,14 @@ def show_docker_ps_a():
             #print(docker_container_single['CREATED'])
 
             line2=line_split_ago[1]
-            spanList=['seconds','second','minutes','minute','hours','hour','days','day','months','month','years','year']
+            print(line2)
+            spanList=['seconds','second','minutes','minute','hours','hour','days','day','months','month','years','year','Created']
             for word in spanList:
                 searchResult=re.search(word, line2)
                 if searchResult:
                     start,end=searchResult.span()
                     break
+            print(end)
             docker_container_single['STATUS']=line2[:end]
 
             line3=line2[end:].split()
@@ -150,7 +152,7 @@ def show_version_list(env_id):
         else:
             flash(form.errors)
         return redirect(url_for('show_version_list', _external=True, env_id=env_id))
-        
+
 @app.route('/delete/<int:id>')
 def delete_environments_list(id):
     # first_or_404() 返回查询的第一个结果，如果没有结果，则终止请求，返回 404 错误响应
