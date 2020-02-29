@@ -130,23 +130,6 @@ def show_docker_ps_a():
         return render_template('docker.html',containerList=docker_container_list)
 
 
-@app.route('/delete/<int:id>')
-def delete_environments_list(id):
-    # first_or_404() 返回查询的第一个结果，如果没有结果，则终止请求，返回 404 错误响应
-    envlist = Environments.query.filter_by(id=id).first_or_404()
-    verlist = Version.query.filter_by(env_id=id).all()
-    print(envlist)
-    print(verlist)
-    # delete()删除数据
-    for version in verlist:      
-        delete_version_list(version.env_id,version.id)
-        db.session.delete(version)
-    db.session.delete(envlist)
-
-    db.session.commit()
-    flash('Delete Env Successfully.')
-    return redirect(url_for('show_environments_list'))
-
 
 @app.route('/view/<int:env_id>', methods=['GET', 'POST'])
 def show_version_list(env_id):
@@ -259,10 +242,20 @@ def deploy(env_id, id):
 
     command="docker run -itd --name {} {} {}:{} ".format(docker_env_name, versionlists.extra_code, env_name,versionlists.env_version)
     print(command)
-    os.system(command)
+    #os.system(command)
+
+    errFlag=0
+    result = os.popen3(command)[2] #err
 
 
-    flash('Deploy Successfully')
+    for line in result:
+    	errFlag=1
+        line=line.strip()
+        print(line)
+        flash(line)
+
+    if not errFlag:
+    	flash('Deploy Successfully')
     return redirect(url_for('show_docker_ps_a'))
 
 
@@ -276,4 +269,4 @@ def page_not_found(e):
 
 if __name__ == '__main__':
     #app.run(host='127.0.0.1', port=5001, debug=True)
-    app.run(host='0.0.0.0', port=5001, debug=True)
+    app.run(host='0.0.0.0', port=2020, debug=True)
