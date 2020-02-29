@@ -12,7 +12,7 @@ from flask_bootstrap import Bootstrap
 from flask_sqlalchemy import SQLAlchemy
 
 from Forms import VersionListForm, EnvironmentsListForm
-
+    
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///hw.db'
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
@@ -150,7 +150,23 @@ def show_version_list(env_id):
         else:
             flash(form.errors)
         return redirect(url_for('show_version_list', _external=True, env_id=env_id))
+        
+@app.route('/delete/<int:id>')
+def delete_environments_list(id):
+    # first_or_404() 返回查询的第一个结果，如果没有结果，则终止请求，返回 404 错误响应
+    envlist = Environments.query.filter_by(id=id).first_or_404()
+    verlist = Version.query.filter_by(env_id=id).all()
+    print(envlist)
+    print(verlist)
+    # delete()删除数据
+    for version in verlist:      
+        delete_version_list(version.env_id,version.id)
+        db.session.delete(version)
+    db.session.delete(envlist)
 
+    db.session.commit()
+    flash('Delete Env Successfully.')
+    return redirect(url_for('show_environments_list'))
 
 @app.route('/change/<int:env_id>/<int:id>', methods=['GET', 'POST'])
 def change_version_list(env_id, id):
@@ -269,4 +285,4 @@ def page_not_found(e):
 
 if __name__ == '__main__':
     #app.run(host='127.0.0.1', port=5001, debug=True)
-    app.run(host='0.0.0.0', port=2020, debug=True)
+    app.run(host='0.0.0.0', port=2021, debug=True)
