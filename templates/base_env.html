@@ -5,7 +5,7 @@
 {% block navbar %}
     <nav class="navbar navbar-inverse container">
         <div class="navbar-header"> <a class="navbar-brand" href="{{ url_for('show_environments_list') }}">Dokcer Auto Deploy</a> </div>
-        <div class="nav navbar-nav navbar-right"> <a class="navbar-brand" href="http://16.155.196.122:8080/">Remote Access</a> </div>
+        <div class="nav navbar-nav navbar-right"> <a class="navbar-brand" href="http://ip:8080/">Remote Access</a> </div>
         <div class="nav navbar-nav navbar-right"> <a class="navbar-brand" href="{{ url_for('show_docker_ps_a') }}">Docker Containers</a> </div>
     </nav>
 {% endblock %}

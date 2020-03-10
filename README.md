@@ -1,8 +1,6 @@
-# CMS-CP-AUTO-DEPLOY
+# DOCKER-AUTO-DEPLOY-WEBSITE
 
-CMS-CP-AUTO-DEPLOY
-
-Created by Hanwen Liu.
+Created by Hanwen Liu during 2020 Spring Festival.
 
 ---
 
